@@ -712,9 +712,41 @@ class mipsropfinder_t(idaapi.plugin_t):
         mipsrop = MIPSROPFinder()
 
 def PLUGIN_ENTRY():
-        return mipsropfinder_t()
+        print("Hello")
+        return None
 
 # DEBUG
 #if __name__ == '__main__':
 #    mipsrop = MIPSROPFinder()
 
+# 1) Create the handler class
+class MyHandler(idaapi.action_handler_t):
+    def __init__(self):
+        idaapi.action_handler_t.__init__(self)
+
+    # Say hello when invoked.
+    def activate(self, ctx):
+        print "Hello!"
+        return 1
+
+    # This action is always available.
+    def update(self, ctx):
+        return idaapi.AST_ENABLE_ALWAYS
+
+
+    # 2) Describe the action
+action_desc = idaapi.action_desc_t(
+    'my:action',   # The action name. This acts like an ID and must be unique
+    'Say hello!',  # The action text.
+    MyHandler(),   # The action handler.
+    'Ctrl+H',      # Optional: the action shortcut
+    'Says hello',  # Optional: the action tooltip (available in menus/toolbar)
+    199)           # Optional: the action icon (shows when in menus/toolbars)
+
+# 3) Register the action
+idaapi.register_action(action_desc)
+
+idaapi.attach_action_to_menu(
+    'Edit/Other/Manual instruction...', # The relative path of where to add the action
+    'my:action',                        # The action ID (see above)
+    idaapi.SETMENU_APP)                 # We want to append the action after the 'Manual instruction...'
